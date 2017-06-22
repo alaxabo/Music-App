@@ -8,10 +8,12 @@
 
 import UIKit
 import AVFoundation
+import MediaPlayer
 
 var didChooseLeftTab = "didChooseLeftTab"
+var didSelectPlayingSong = "didSelectPlayingSong"
 
-class ViewController: UIViewController {
+class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     @IBOutlet weak var tabButton: UIBarButtonItem!
     @IBOutlet weak var collectionView: UICollectionView!
@@ -31,13 +33,11 @@ class ViewController: UIViewController {
     var selectedType: String?
     var songs = [Song]()
     var audioPlayer = AVAudioPlayer()
-    var thisSong = 0
     var audioLength = 0.0
     var timer:Timer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        getSongNames()
         // Do any additional setup after loading the view, typically from a nib.
         
         //Tab Menu Set
@@ -70,9 +70,15 @@ class ViewController: UIViewController {
         }
         
         NotificationCenter.default.addObserver(self, selector: #selector(getSelectFromLeftTab(_:)), name: NSNotification.Name(rawValue: didChooseLeftTab), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(playSelectedSong(_:)), name: NSNotification.Name(rawValue: didSelectPlayingSong), object: nil)
         
         
     }
+    
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+    }
+
     
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
@@ -91,44 +97,30 @@ class ViewController: UIViewController {
         collectionView.reloadData()
     }
     
-    //Get Song Name
-    func getSongNames(){
-        let folderURL = URL(fileURLWithPath: Bundle.main.resourcePath!)
-        var songTitle, songArtist, songAlbum: String!
-        var songArtWork: Data!
-        do
-        {
-            let songPath = try FileManager.default.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-            for song in songPath
-            {
-                var mySong = song.absoluteString
-                if mySong.contains(".mp3")
-                {
-                    let avpltem = AVPlayerItem(url: song)
-                    let commonMetadata = avpltem.asset.commonMetadata
-                    for i in commonMetadata{
-                        if i.commonKey == "title"{
-                            songTitle = i.stringValue
-                        }
-                        if i.commonKey == "artist"{
-                            songArtist = i.stringValue
-                        }
-                        if i.commonKey == "albumName"{
-                            songAlbum = i.stringValue
-                        }
-                        if i.commonKey == "artwork"{
-                            songArtWork = i.dataValue
-                        }
-                        
-                    }
-                    songs.append(Song(title: songTitle, artist: songArtist, album: songAlbum, artWork: songArtWork))
-                }
-                
+    func playSelectedSong(_ notification: Notification){
+        let result = notification.object as! [String:AnyObject]
+        let songTitle = result["songTitle"] as! String
+        let songArtwork = result["imageData"] as! Data
+        do{
+            let audioPath = Bundle.main.path(forResource: songTitle, ofType: "mp3")
+            try audioPlayer = AVAudioPlayer(contentsOf: NSURL(fileURLWithPath: audioPath!) as URL)
+            self.playingName.text = songTitle
+            if songArtwork == nil{
+                currentArtwork.image = UIImage(named: "default")
             }
+            else{
+                currentArtwork.image = UIImage(data: songArtwork)
+            }
+            
+            preparePlay()
+            audioPlayer.delegate = self
+            playSong()
         }
-        catch{
-            print ("ERROR")
+        catch
+        {
+            print("ERROR")
         }
+
     }
     
     func preparePlay(){
@@ -168,7 +160,6 @@ class ViewController: UIViewController {
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool){
         if flag == true {
             playButton.setTitle("Play", for: .normal)
-            return
         }
     }
     
@@ -208,6 +199,10 @@ class ViewController: UIViewController {
             playButton.setTitle("Pause", for: .normal)
         }
     }
+    @IBAction func changePlayTime(_ sender: UISlider) {
+        audioPlayer.currentTime = TimeInterval(sender.value)
+
+    }
     
 }
 
@@ -243,49 +238,6 @@ extension ViewController: UICollectionViewDelegate{
         }
         didSelected[indexPath.row] = true
         collectionView.reloadData()
-    }
-}
-
-//Set Song Table
-
-extension ViewController: UITableViewDelegate, UITableViewDataSource{
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return songs.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = songTable.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SongTableCell
-        cell.titleLabel?.text = songs[indexPath.row].title
-        cell.artistLabel?.text = songs[indexPath.row].artist
-        if songs[indexPath.row].artWork == nil{
-             cell.artworkImage.image=UIImage(named: "default")
-        }
-        else{
-        cell.artworkImage?.image = UIImage(data: songs[indexPath.row].artWork!)
-        }
-        return cell
-    }
-    
-    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        do{
-            let audioPath = Bundle.main.path(forResource: songs[indexPath.row].title, ofType: "mp3")
-            try audioPlayer = AVAudioPlayer(contentsOf: NSURL(fileURLWithPath: audioPath!) as URL)
-            thisSong = indexPath.row
-            self.playingName.text = songs[indexPath.row].title
-            if songs[indexPath.row].artWork == nil{
-                currentArtwork.image = UIImage(named: "default")
-            }
-            else{
-                currentArtwork.image = UIImage(data: songs[indexPath.row].artWork!)
-            }
-
-            preparePlay()
-            playSong()
-        }
-        catch
-        {
-            print("ERROR")
-        }
     }
 }
 

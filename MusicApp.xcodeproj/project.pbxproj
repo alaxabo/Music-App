@@ -25,6 +25,7 @@
 		6B03E1F11EFA2E7B00A76585 /* Scarlet Fire.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6B03E1EA1EFA2E7B00A76585 /* Scarlet Fire.mp3 */; };
 		6B03E1F51EFA6BBB00A76585 /* Song.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B03E1F41EFA6BBB00A76585 /* Song.swift */; };
 		6B03E1FC1EFA741B00A76585 /* SongTableCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B03E1FB1EFA741B00A76585 /* SongTableCell.swift */; };
+		6B35CB691EFBA5270045181D /* SongTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B35CB681EFBA5270045181D /* SongTableViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -50,6 +51,7 @@
 		6B03E1EA1EFA2E7B00A76585 /* Scarlet Fire.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Scarlet Fire.mp3"; path = "Song/Scarlet Fire.mp3"; sourceTree = "<group>"; };
 		6B03E1F41EFA6BBB00A76585 /* Song.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Song.swift; path = ../Song.swift; sourceTree = "<group>"; };
 		6B03E1FB1EFA741B00A76585 /* SongTableCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongTableCell.swift; sourceTree = "<group>"; };
+		6B35CB681EFBA5270045181D /* SongTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SongTableViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,6 +131,7 @@
 				6B03E1D91EFA170700A76585 /* SWRevealViewController */,
 				6B03E1DE1EFA19AD00A76585 /* LeftTabController.swift */,
 				6B03E1C31EFA09F100A76585 /* ViewController.swift */,
+				6B35CB681EFBA5270045181D /* SongTableViewController.swift */,
 			);
 			name = Controller;
 			sourceTree = "<group>";
@@ -244,6 +247,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				6B03E1F51EFA6BBB00A76585 /* Song.swift in Sources */,
+				6B35CB691EFBA5270045181D /* SongTableViewController.swift in Sources */,
 				6B03E1C41EFA09F100A76585 /* ViewController.swift in Sources */,
 				6B03E1C21EFA09F100A76585 /* AppDelegate.swift in Sources */,
 				6B03E1D81EFA16BE00A76585 /* CollectionViewCell.swift in Sources */,
