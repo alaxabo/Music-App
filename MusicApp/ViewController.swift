@@ -164,6 +164,14 @@ class ViewController: UIViewController {
         UserDefaults.standard.set(playProgress.value , forKey: "playerProgressSliderValue")
     }
     
+    // MARK:- AVAudioPlayer Delegate's Callback method
+    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool){
+        if flag == true {
+            playButton.setTitle("Play", for: .normal)
+            return
+        }
+    }
+    
     
     //Return Song Length
     func calculateTimeFromNSTimeInterval(_ duration:TimeInterval) ->(minute:String, second:String){
