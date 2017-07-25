@@ -1,16 +1,16 @@
 //
-//  LeftTabController.swift
+//  QueueViewController.swift
 //  MusicApp
 //
-//  Created by Alaxabo on 6/21/17.
+//  Created by Alaxabo on 7/25/17.
 //  Copyright © 2017 Alaxabo. All rights reserved.
 //
 
 import UIKit
 
-class LeftTabController: UITableViewController {
+class QueueViewController: UITableViewController {
 
-    var categoryType = ["Songs","Albums","Artists"]
+    @IBOutlet var playListTable: UITableView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -20,6 +20,10 @@ class LeftTabController: UITableViewController {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         // self.navigationItem.rightBarButtonItem = self.editButtonItem()
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        playListTable.isEditing = true
+        
     }
 
     override func didReceiveMemoryWarning() {
@@ -36,35 +40,43 @@ class LeftTabController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         // #warning Incomplete implementation, return the number of rows
-        return categoryType.count + 1
+        return Shared.shared.playList.count
     }
 
     
     override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! LeftTabCell
-        if indexPath.row == 0{
-            cell.label.text = "By Alaxabo"
-            cell.label.font = cell.label.font.withSize(25)
-            cell.isUserInteractionEnabled = false
-        }
-        else{
-        cell.label?.text = categoryType[indexPath.row - 1]
-        }
-        // Configure the cell...
-
+        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SongTableCell
+        cell.titleLabel?.text = Shared.shared.playList[indexPath.row].title
+        cell.artistLabel?.text = Shared.shared.playList[indexPath.row].artist
+        cell.artworkImage?.image = UIImage(data: Shared.shared.playList[indexPath.row].artWork!)
+        cell.accessoryType = .disclosureIndicator
         return cell
     }
     
-    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if self.revealViewController() != nil {
-            self.revealViewController().pushFrontViewController(revealViewController().frontViewController, animated: true)
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: didChooseLeftTab), object: categoryType[indexPath.row - 1])
-            NotificationCenter.default.post(name: NSNotification.Name(rawValue: didChooseCategory), object: (indexPath.row))
-
-            }
+    override func tableView(_ tableView: UITableView, moveRowAt fromIndexPath: IndexPath, to: IndexPath) {
+        let itemToMove = Shared.shared.playList[fromIndexPath.row]
+        Shared.shared.playList.remove(at: fromIndexPath.row)
+        Shared.shared.playList.insert(itemToMove, at: to.row)
+        playListTable.reloadData()
     }
     
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if editingStyle == .delete {
+            if Shared.shared.playList[indexPath.row].title != Shared.shared.currentPlaying?.title {
+                Shared.shared.playList.remove(at: indexPath.row)
+            } else {
+                let message = UIAlertController(title: nil, message: "Cannot Delete Playing Song <3", preferredStyle: UIAlertControllerStyle.alert)
+                let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
+                message.addAction(cancel)
+                self.present(message, animated: true, completion: nil)
+            }
+        }
+        playListTable.reloadData()
+    }
+
+
     
+
     /*
     // Override to support conditional editing of the table view.
     override func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {

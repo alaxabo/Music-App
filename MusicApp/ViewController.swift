@@ -12,6 +12,9 @@ import MediaPlayer
 
 var didChooseLeftTab = "didChooseLeftTab"
 var didSelectPlayingSong = "didSelectPlayingSong"
+var didupdateFromPlayScreen = "didupdateFromPlayScreen"
+var didupdatePlayDone = "didupdatePlayDone"
+var didupdatePauseToMain = "didupdatePauseToMain"
 
 class ViewController: UIViewController, AVAudioPlayerDelegate {
     
@@ -19,6 +22,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     @IBOutlet weak var collectionView: UICollectionView!
     @IBOutlet weak var searchBar: UISearchBar!
     
+    @IBOutlet weak var playingArtist: UILabel!
     @IBOutlet weak var songTable: UITableView!
     @IBOutlet weak var playingName: UILabel!
     @IBOutlet weak var playButton: UIButton!
@@ -26,18 +30,37 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     @IBOutlet weak var currentArtwork: UIImageView!
     
     
+    lazy var tapRecognizer: UITapGestureRecognizer = {
+        var recognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.dismissKeyboard))
+        return recognizer
+    }()
+    
+    func dismissKeyboard() {
+        searchBar.resignFirstResponder()
+    }
     
     
     var categoryType = ["Songs","Albums","Artists"]
     var didSelected = [Bool](repeating: false, count: 3)
     var selectedType: String?
     var songs = [Song]()
-    var audioPlayer = AVAudioPlayer()
+    var currentSong: Song?
     var audioLength = 0.0
     var timer:Timer!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if (Shared.shared.currentPlaying == nil){
+        playingName.text = "No Song"
+        playingArtist.text = "No Artist"
+        playProgress.value = 0.0
+        }
+        
+        
+        self.searchBar.placeholder = "Search ..."
+        self.searchBar.tintColor = UIColor.white
+        self.searchBar.barTintColor = UIColor(red: 30.0/255.0, green: 30.0/255.0, blue: 30.0/255.0, alpha: 1.0)
         // Do any additional setup after loading the view, typically from a nib.
         
         //Tab Menu Set
@@ -68,10 +91,21 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
                 collectionView.scrollToItem(at: indexPath, at: UICollectionViewScrollPosition.centeredVertically, animated: true)
             }
         }
+        //Move To Play Screen When Tap Artwork
+//        let recognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:)))
+//        recognizer.numberOfTapsRequired = 1
+       // currentArtwork.addGestureRecognizer(recognizer)
+        currentArtwork.isUserInteractionEnabled = true
         
+        
+        //Notification Receive
         NotificationCenter.default.addObserver(self, selector: #selector(getSelectFromLeftTab(_:)), name: NSNotification.Name(rawValue: didChooseLeftTab), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(playSelectedSong(_:)), name: NSNotification.Name(rawValue: didSelectPlayingSong), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updateMainScreen(_:)), name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updatePlayButton(_:)), name: NSNotification.Name(rawValue: didupdatePlayDone), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(updatePlayButton(_:)), name: NSNotification.Name(rawValue: didupdatePauseToMain), object: nil)
         
+
         
     }
     
@@ -84,6 +118,28 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
+
+    
+    //
+    
+    func handleTap(recognizer: UITapGestureRecognizer){
+        let storyBoard : UIStoryboard = UIStoryboard(name: "Main", bundle:nil)
+        let secondViewController = storyBoard.instantiateViewController(withIdentifier: "playScene")
+        self.present(secondViewController, animated:true)
+        //self.navigationController?.pushViewController(secondViewController, animated: true)
+    }
+    
+    // MARK:- AVAudioPlayer Delegate's Callback method
+    
+    func updatePlayButton(_ notification: Notification){
+        if Shared.shared.audioPlayer.isPlaying == true{
+        playButton.setTitle("Pause", for: .normal)
+        }
+        else{
+            playButton.setTitle("Play", for: .normal)
+        }
+    }
+
     
     func getSelectFromLeftTab(_ notification: Notification){
         let result = notification.object as? String
@@ -97,24 +153,44 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         collectionView.reloadData()
     }
     
+    func updateMainScreen(_ notification: Notification){
+        audioLength = Shared.shared.audioPlayer.duration
+        playProgress.maximumValue = CFloat(Shared.shared.audioPlayer.duration)
+        playProgress.minimumValue = 0.0
+        playProgress.value = Float(Shared.shared.audioPlayer.currentTime)
+        
+        playingName.text = Shared.shared.currentPlaying?.title
+        playingArtist.text = Shared.shared.currentPlaying?.artist
+        
+        startTimer()
+        if (Shared.shared.currentPlaying?.artWork == nil){
+            currentArtwork.image = UIImage(named: "default")
+        }
+        else{
+            currentArtwork.image = UIImage(data: (Shared.shared.currentPlaying?.artWork)!)
+        }
+        if Shared.shared.audioPlayer.isPlaying == true{
+            playButton.setTitle("Pause", for: .normal)
+        }
+    }
+    
     func playSelectedSong(_ notification: Notification){
-        let result = notification.object as! [String:AnyObject]
-        let songTitle = result["songTitle"] as! String
-        let songArtwork = result["imageData"] as! Data
         do{
-            let audioPath = Bundle.main.path(forResource: songTitle, ofType: "mp3")
-            try audioPlayer = AVAudioPlayer(contentsOf: NSURL(fileURLWithPath: audioPath!) as URL)
-            self.playingName.text = songTitle
-            if songArtwork == nil{
+            let audioPath = Bundle.main.path(forResource: Shared.shared.currentPlaying?.title, ofType: "mp3")
+            try Shared.shared.audioPlayer = AVAudioPlayer(contentsOf: NSURL(fileURLWithPath: audioPath!) as URL)
+            self.playingName.text = Shared.shared.currentPlaying?.title
+            self.playingArtist.text = Shared.shared.currentPlaying?.artist
+            if Shared.shared.currentPlaying?.artWork == nil{
                 currentArtwork.image = UIImage(named: "default")
             }
             else{
-                currentArtwork.image = UIImage(data: songArtwork)
+                currentArtwork.image = UIImage(data: (Shared.shared.currentPlaying?.artWork)!)
             }
-            
             preparePlay()
-            audioPlayer.delegate = self
+            //Shared.shared.audioPlayer.delegate = self
             playSong()
+            Shared.shared.updateInfoMPNowPlaying()
+            
         }
         catch
         {
@@ -124,19 +200,20 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     func preparePlay(){
-        audioLength = audioPlayer.duration
-        playProgress.maximumValue = CFloat(audioPlayer.duration)
+        audioLength = Shared.shared.audioPlayer.duration
+        playProgress.maximumValue = CFloat(Shared.shared.audioPlayer.duration)
         playProgress.minimumValue = 0.0
         playProgress.value = 0.0
         currentArtwork.image = UIImage(named: "default")
     }
     
     func playSong(){
-        audioPlayer.play()
+        Shared.shared.audioPlayer.play()
         startTimer()
-        if (audioPlayer.isPlaying == true) && (playButton.currentTitle == "Play"){
+        if (Shared.shared.audioPlayer.isPlaying == true) && (playButton.currentTitle == "Play"){
             playButton.setTitle("Pause", for: .normal)
         }
+
     }
     
     func startTimer(){
@@ -148,19 +225,12 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     
     func update(_ timer: Timer){
-        if !audioPlayer.isPlaying{
+        if !Shared.shared.audioPlayer.isPlaying{
             return
         }
-        let time = calculateTimeFromNSTimeInterval(audioPlayer.currentTime)
-        playProgress.value = CFloat(audioPlayer.currentTime)
+        let time = calculateTimeFromNSTimeInterval(Shared.shared.audioPlayer.currentTime)
+        playProgress.value = CFloat(Shared.shared.audioPlayer.currentTime)
         UserDefaults.standard.set(playProgress.value , forKey: "playerProgressSliderValue")
-    }
-    
-    // MARK:- AVAudioPlayer Delegate's Callback method
-    func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool){
-        if flag == true {
-            playButton.setTitle("Play", for: .normal)
-        }
     }
     
     
@@ -176,32 +246,21 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         return (minute,second)
     }
     
-    func showTotalSongLength(){
-        calculateSongLength()
-        //        totalLengthOfAudioLabel.text = totalLengthOfAudio
-    }
-    
-    
-    func calculateSongLength(){
-        let time = calculateTimeFromNSTimeInterval(audioLength)
-        //        totalLengthOfAudio = "\(time.minute):\(time.second)"
-    }
-    
-    
     //Play Controll
     @IBAction func play(_ sender: Any) {
-        if audioPlayer.isPlaying == true{
-            audioPlayer.pause()
+        if Shared.shared.audioPlayer.isPlaying == true{
+            Shared.shared.audioPlayer.pause()
             playButton.setTitle("Play", for: .normal)
         }
         else{
-            audioPlayer.play()
+            Shared.shared.audioPlayer.play()
             playButton.setTitle("Pause", for: .normal)
         }
     }
     @IBAction func changePlayTime(_ sender: UISlider) {
-        audioPlayer.currentTime = TimeInterval(sender.value)
-
+        Shared.shared.audioPlayer.currentTime = TimeInterval(sender.value)
+    }
+    @IBAction func cancelToViewController(segue:UIStoryboardSegue) {
     }
     
 }
@@ -238,7 +297,24 @@ extension ViewController: UICollectionViewDelegate{
         }
         didSelected[indexPath.row] = true
         collectionView.reloadData()
+        
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: didChooseCategory), object: (indexPath.row + 1))
     }
+}
+
+extension ViewController: UISearchBarDelegate{
+    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        dismissKeyboard()
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: didSendTheSearch), object: (searchBar.text))
+    }
+    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
+        view.addGestureRecognizer(tapRecognizer)
+    }
+    
+    func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
+        view.removeGestureRecognizer(tapRecognizer)
+    }
+
 }
 
 
