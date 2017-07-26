@@ -13,12 +13,6 @@ class ArtistDetailViewController: UIViewController {
     @IBOutlet weak var artistArtwork: UIImageView!
     @IBOutlet weak var artistName: UILabel!
     
-    @IBOutlet weak var playingSongName: UILabel!
-    @IBOutlet weak var playingArtist: UILabel!
-    @IBOutlet weak var playingArtwork: UIImageView!
-    
-    @IBOutlet weak var playingProgress: UISlider!
-    
     var selectedArtist: Artist?
     
     override func viewDidLoad() {
@@ -35,9 +29,6 @@ class ArtistDetailViewController: UIViewController {
     }
     
 
-    @IBAction func play(_ sender: Any) {
-    }
-    
     /*
     // MARK: - Navigation
 
@@ -79,21 +70,5 @@ extension ArtistDetailViewController: UITableViewDelegate{
         
     }
 
-}
-
-extension ArtistDetailViewController: UICollectionViewDataSource{
-    func numberOfSections(in collectionView: UICollectionView) -> Int {
-        return 1
-    }
-    
-    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return (selectedArtist?.albumName.count)!
-    }
-    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: "Media", for: indexPath) as! AlbumCollectionViewCell
-        cell.albumName.text = selectedArtist?.albumName[indexPath.row].title
-      //  cell.albumCountSong.text = selectedArtist?.albumName[indexPath.row].albumSongs.count
-        return cell
-    }
 }
 

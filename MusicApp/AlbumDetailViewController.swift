@@ -14,10 +14,6 @@ class AlbumDetailViewController: UIViewController {
     @IBOutlet weak var albumTitle: UILabel!
     @IBOutlet weak var albumArtist: UILabel!
     
-    @IBOutlet weak var playingSongName: UILabel!
-    @IBOutlet weak var playingArtist: UILabel!
-    @IBOutlet weak var playingArtwork: UIImageView!
-    @IBOutlet weak var playingProgress: UISlider!
     @IBOutlet weak var tableView: UITableView!
     
     var selectedAlbum: Album?
@@ -36,8 +32,6 @@ class AlbumDetailViewController: UIViewController {
     }
     
 
-    @IBAction func play(_ sender: Any) {
-    }
     
     @IBAction func back(_ sender: Any) {
         dismiss(animated: true, completion: .none)

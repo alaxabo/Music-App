@@ -45,12 +45,23 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         Shared.shared.audioPlayer.delegate = self
         }
 
+        setupNowPlayingInfoCentre()
+        
         NotificationCenter.default.addObserver(self, selector: #selector(updatePlayDisplay(_:)), name: NSNotification.Name(rawValue: didChooseFromPlayList), object: nil)
         // Do any additional setup after loading the view.
     }
     
     override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
+    }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        if Shared.shared.audioPlayer.isPlaying{
+            //playButton.setTitle("Pause", for: .normal)
+            playButton.setImage(UIImage(named: "Pause"), for: .normal)
+            artworkImage.startRotating()
+        }
+
     }
 
 
@@ -63,26 +74,28 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         playProgress.maximumValue = CFloat(Shared.shared.audioPlayer.duration)
         playProgress.minimumValue = 0.0
         playProgress.value = Float(Shared.shared.audioPlayer.currentTime)
-        let time = calculateTimeFromNSTimeInterval(Shared.shared.audioPlayer.currentTime)
+        let time = Shared.shared.calculateTimeFromNSTimeInterval(Shared.shared.audioPlayer.currentTime)
         durationLabel.text  = "\(time.minute):\(time.second)"
         
         playingNameLabel.text = Shared.shared.currentPlaying?.title
         artistNameLabel.text = Shared.shared.currentPlaying?.artist
-       
         startTimer()
+        
         if (Shared.shared.currentPlaying?.artWork == nil){
             artworkImage.image = UIImage(named: "default")
         }
         else{
             artworkImage.image = UIImage(data: (Shared.shared.currentPlaying?.artWork)!)
         }
-        if Shared.shared.audioPlayer.isPlaying == true{
-            playButton.setTitle("Pause", for: .normal)
-        }
+//        if Shared.shared.audioPlayer.isPlaying{
+//            //playButton.setTitle("Pause", for: .normal)
+//            playButton.setImage(UIImage(named: "Pause"), for: .normal)
+//            artworkImage.startRotating()
+//        }
         if Shared.shared.reapeatValue == true{
             repeatButton.isSelected = true
         }
-        if Shared.shared.shufferValue == true{
+        if Shared.shared.shufferValue == true {
             shufferButton.isSelected = true
         }
     }
@@ -97,7 +110,8 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
 
         Shared.shared.audioPlayer.delegate = self
         Shared.shared.playSong()
-        playButton.setTitle("Pause", for: .normal)
+        //playButton.setTitle("Pause", for: .normal)
+        playButton.setImage(UIImage(named: "Pause"), for: .normal)
         startTimer()
         
         if (Shared.shared.currentPlaying?.artWork == nil){
@@ -123,44 +137,21 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         if !Shared.shared.audioPlayer.isPlaying{
             return
         }
-        let time = calculateTimeFromNSTimeInterval(Shared.shared.audioPlayer.currentTime)
+        let time = Shared.shared.calculateTimeFromNSTimeInterval(Shared.shared.audioPlayer.currentTime)
         durationLabel.text  = "\(time.minute):\(time.second)"
         playProgress.value = CFloat(Shared.shared.audioPlayer.currentTime)
         UserDefaults.standard.set(playProgress.value , forKey: "playerProgressSliderValue")
     }
     
-    //Return Song Length
-    func calculateTimeFromNSTimeInterval(_ duration:TimeInterval) ->(minute:String, second:String){
-        // let hour_   = abs(Int(duration)/3600)
-        let minute_ = abs(Int((duration/60).truncatingRemainder(dividingBy: 60)))
-        let second_ = abs(Int(duration.truncatingRemainder(dividingBy: 60)))
-        
-        // var hour = hour_ > 9 ? "\(hour_)" : "0\(hour_)"
-        let minute = minute_ > 9 ? "\(minute_)" : "0\(minute_)"
-        let second = second_ > 9 ? "\(second_)" : "0\(second_)"
-        return (minute,second)
-    }
-    
-    func showTotalSongLength(){
-        calculateSongLength()
-        //totalLengthOfAudioLabel.text = totalLengthOfAudio
-    }
-    
-    
-    func calculateSongLength(){
-        let time = calculateTimeFromNSTimeInterval(audioLength)
-        //        totalLengthOfAudio = "\(time.minute):\(time.second)"
-    }
-
     // MARK:- AVAudioPlayer Delegate's Callback method
     func audioPlayerDidFinishPlaying(_ player: AVAudioPlayer, successfully flag: Bool){
         if flag == true {
             if Shared.shared.reapeatValue == true {
                 Shared.shared.playSong()
+                artworkImage.startRotating()
             }
             if Shared.shared.shufferValue == true {
-                let shufferIndex = Int(arc4random_uniform(UInt32(Shared.shared.playList.count)))
-                Shared.shared.currentPlaying = Shared.shared.playList[shufferIndex]
+                Shared.shared.currentPlaying = Shared.shared.playList[Int(arc4random_uniform(UInt32(Shared.shared.playList.count)))]
                 do{
                     let audioPath = Bundle.main.path(forResource: Shared.shared.currentPlaying?.title, ofType: "mp3")
                     try Shared.shared.audioPlayer = AVAudioPlayer(contentsOf: NSURL(fileURLWithPath: audioPath!) as URL)
@@ -171,6 +162,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
                 prepare()
                 Shared.shared.audioPlayer.delegate = self
                 Shared.shared.playSong()
+                artworkImage.startRotating()
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
             }
             if (Shared.shared.reapeatValue == false) && (Shared.shared.shufferValue == false){
@@ -179,111 +171,170 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
             }
         }
     }
+    func pause(){
+        Shared.shared.pauseSong()
+    }
+    
+    func setupNowPlayingInfoCentre() {
+        try! AVAudioSession.sharedInstance().setActive(true)
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: .defaultToSpeaker)
+        } catch {
+        }
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        becomeFirstResponder()
+        MPRemoteCommandCenter.shared().playCommand.addTarget(handler: {event in
+            self.playButton.setImage(UIImage(named: "Pause"), for: .normal)
+            self.artworkImage.startRotating()
+            return .success
+        })
+        MPRemoteCommandCenter.shared().pauseCommand.addTarget(handler: {event in
+            self.playButton.setImage(UIImage(named: "Play"), for: .normal)
+            self.artworkImage.stopRotating()
+            return .success
+        })
+
+        MPRemoteCommandCenter.shared().nextTrackCommand.addTarget(handler: {event in
+            Shared.shared.nextSong()
+            self.prepare()
+            Shared.shared.audioPlayer.delegate = self
+            Shared.shared.playSong()
+            //playButton.setTitle("Pause", for: .normal)
+            self.playButton.setImage(UIImage(named: "Pause"), for: .normal)
+            self.artworkImage.startRotating()
+            //self.rotateView(targetView: self.artworkImage, duration: 4.0)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
+            return .success
+        })
+        
+        MPRemoteCommandCenter.shared().previousTrackCommand.addTarget(handler: {event in
+            Shared.shared.prevSong()
+            self.prepare()
+            Shared.shared.audioPlayer.delegate = self
+            Shared.shared.playSong()
+            //playButton.setTitle("Pause", for: .normal)
+            self.playButton.setImage(UIImage(named: "Pause"), for: .normal)
+            self.artworkImage.startRotating()
+            //self.rotateView(targetView: self.artworkImage, duration: 4.0)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
+            return .success
+        })
+        
+    }
+
     
 
     @IBAction func play(_ sender: Any) {
+        if Shared.shared.currentPlaying == nil{
+            playButton.setImage(UIImage(named: "Play"), for: .normal)
+        }
+        else{
         if Shared.shared.audioPlayer.isPlaying == true{
-            Shared.shared.audioPlayer.pause()
-            playButton.setTitle("Play", for: .normal)
+            Shared.shared.pauseSong()
+           // playButton.setTitle("Play", for: .normal)
+            playButton.setImage(UIImage(named: "Play"), for: .normal)
+            artworkImage.stopRotating()
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdatePauseToMain), object: nil)
         }
         else{
             Shared.shared.playSong()
-            playButton.setTitle("Pause", for: .normal)
+           // playButton.setTitle("Pause", for: .normal)
+            playButton.setImage(UIImage(named: "Pause"), for: .normal)
+            artworkImage.startRotating()
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdatePauseToMain), object: nil)
         }
-
+        }
     }
     
     
     @IBAction func changePlayTime(_ sender: UISlider) {
          Shared.shared.audioPlayer.currentTime = TimeInterval(sender.value)
+        Shared.shared.updateInfoMPNowPlaying()
     }
     @IBAction func repeatClick(_ sender: Any) {
        if Shared.shared.reapeatValue == true
        {
          Shared.shared.reapeatValue = false
-         repeatButton.isSelected = false
+         //repeatButton.isSelected = false
+         repeatButton.backgroundColor = .none
         }
         else{
          Shared.shared.reapeatValue = true
          repeatButton.isSelected = true
+         repeatButton.backgroundColor = .red
          if (Shared.shared.shufferValue == true){
             Shared.shared.shufferValue = false
-            shufferButton.isSelected = false
+            //shufferButton.isSelected = false
+            shufferButton.backgroundColor = .none
         }
         }
     }
     
     @IBAction func shufferClick(_ sender: Any) {
-        if Shared.shared.shufferValue == true{
+        if Shared.shared.shufferValue == true
+        {
             Shared.shared.shufferValue = false
-            shufferButton.isSelected = false
+            //shufferButton.isSelected = false
+            shufferButton.backgroundColor = .none
         }
         else{
             Shared.shared.shufferValue = true
             shufferButton.isSelected = true
+            shufferButton.backgroundColor = .red
             if (Shared.shared.reapeatValue == true){
                 Shared.shared.reapeatValue = false
-                repeatButton.isSelected = false
+               // repeatButton.isSelected = false
+                repeatButton.backgroundColor = .none
             }
         }
     }
     @IBAction func nextClick(_ sender: Any) {
-        var currentIndex = 0
-        for i in 0 ..< Shared.shared.playList.count{
-            if Shared.shared.currentPlaying?.title == Shared.shared.playList[i].title{
-                currentIndex = i
-            }
-        }
-        if ((currentIndex + 1) >= Shared.shared.playList.count){
-            Shared.shared.currentPlaying = Shared.shared.playList[0]
-        }
-        else{
-        Shared.shared.currentPlaying = Shared.shared.playList[currentIndex + 1]
-        }
-        do{
-            let audioPath = Bundle.main.path(forResource: Shared.shared.currentPlaying?.title, ofType: "mp3")
-            try Shared.shared.audioPlayer = AVAudioPlayer(contentsOf: NSURL(fileURLWithPath: audioPath!) as URL)
-        }
-        catch{
-            print("ERROR")
-        }
+        Shared.shared.nextSong()
         prepare()
         Shared.shared.audioPlayer.delegate = self
         Shared.shared.playSong()
-        playButton.setTitle("Pause", for: .normal)
+        //playButton.setTitle("Pause", for: .normal)
+        playButton.setImage(UIImage(named: "Pause"), for: .normal)
+        artworkImage.startRotating()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
     }
+    
     @IBAction func prevClick(_ sender: Any) {
-        var currentIndex = 0
-        for i in 0 ..< Shared.shared.playList.count{
-            if Shared.shared.currentPlaying?.title == Shared.shared.playList[i].title{
-                currentIndex = i
-            }
-        }
-        if ((currentIndex - 1) < 0){
-            Shared.shared.currentPlaying = Shared.shared.playList[Shared.shared.playList.count - 1]
-        }
-        else{
-            Shared.shared.currentPlaying = Shared.shared.playList[currentIndex - 1]
-        }
-        do{
-            let audioPath = Bundle.main.path(forResource: Shared.shared.currentPlaying?.title, ofType: "mp3")
-            try Shared.shared.audioPlayer = AVAudioPlayer(contentsOf: NSURL(fileURLWithPath: audioPath!) as URL)
-        }
-        catch{
-            print("ERROR")
-        }
+        Shared.shared.prevSong()
         prepare()
         Shared.shared.audioPlayer.delegate = self
         Shared.shared.playSong()
-        playButton.setTitle("Pause", for: .normal)
+        //playButton.setTitle("Pause", for: .normal)
+        playButton.setImage(UIImage(named: "Pause"), for: .normal)
+        artworkImage.startRotating()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
         
     }
     
     @IBAction func cancelToPlayViewController(segue:UIStoryboardSegue) {
+    }
+    
+}
+
+extension UIView {
+    func startRotating(duration: Double = 10) {
+        let kAnimationKey = "rotation"
+        
+        if self.layer.animation(forKey: kAnimationKey) == nil {
+            let animate = CABasicAnimation(keyPath: "transform.rotation")
+            animate.duration = duration
+            animate.repeatCount = Float.infinity
+            animate.fromValue = 0.0
+            animate.toValue = Float(M_PI * 2)
+            self.layer.add(animate, forKey: kAnimationKey)
+        }
+    }
+    func stopRotating() {
+        let kAnimationKey = "rotation"
+        
+        if self.layer.animation(forKey: kAnimationKey) != nil {
+            self.layer.removeAnimation(forKey: kAnimationKey)
+        }
     }
 }
 

@@ -31,9 +31,11 @@
 		6B44C89E1F03B4EA00FC8E73 /* PlayViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B44C89D1F03B4EA00FC8E73 /* PlayViewController.swift */; };
 		6B5F75051F20A9670096CED7 /* MusicQueueViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B5F75041F20A9670096CED7 /* MusicQueueViewController.swift */; };
 		6B8BAB121F26E46B007CC7A2 /* QueueViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B8BAB111F26E46B007CC7A2 /* QueueViewController.swift */; };
+		6B8BAB141F270599007CC7A2 /* Nơi Này Có Anh.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6B8BAB131F270599007CC7A2 /* Nơi Này Có Anh.mp3 */; };
 		6B91A13A1F1DFCCE00E381EC /* AlbumDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B91A1391F1DFCCE00E381EC /* AlbumDetailViewController.swift */; };
 		6B91A13C1F1DFCEF00E381EC /* ArtistDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B91A13B1F1DFCEF00E381EC /* ArtistDetailViewController.swift */; };
 		6B91A1401F1E19A800E381EC /* AlbumCollectionViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6B91A13F1F1E19A800E381EC /* AlbumCollectionViewCell.swift */; };
+		6BC72CFF1F2742730071C01A /* Lạc Trôi.mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 6BC72CFE1F2742730071C01A /* Lạc Trôi.mp3 */; };
 		6BE5164B1F204CCA002EF157 /* PlayListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE5164A1F204CCA002EF157 /* PlayListViewController.swift */; };
 		6BE5164D1F20522A002EF157 /* Media.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6BE5164C1F20522A002EF157 /* Media.swift */; };
 /* End PBXBuildFile section */
@@ -67,9 +69,11 @@
 		6B44C89D1F03B4EA00FC8E73 /* PlayViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayViewController.swift; sourceTree = "<group>"; };
 		6B5F75041F20A9670096CED7 /* MusicQueueViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = MusicQueueViewController.swift; sourceTree = "<group>"; };
 		6B8BAB111F26E46B007CC7A2 /* QueueViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueueViewController.swift; sourceTree = "<group>"; };
+		6B8BAB131F270599007CC7A2 /* Nơi Này Có Anh.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Nơi Này Có Anh.mp3"; path = "Song/Nơi Này Có Anh.mp3"; sourceTree = "<group>"; };
 		6B91A1391F1DFCCE00E381EC /* AlbumDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlbumDetailViewController.swift; sourceTree = "<group>"; };
 		6B91A13B1F1DFCEF00E381EC /* ArtistDetailViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ArtistDetailViewController.swift; sourceTree = "<group>"; };
 		6B91A13F1F1E19A800E381EC /* AlbumCollectionViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AlbumCollectionViewCell.swift; path = ../AlbumCollectionViewCell.swift; sourceTree = "<group>"; };
+		6BC72CFE1F2742730071C01A /* Lạc Trôi.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; name = "Lạc Trôi.mp3"; path = "Song/Lạc Trôi.mp3"; sourceTree = "<group>"; };
 		6BE5164A1F204CCA002EF157 /* PlayListViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PlayListViewController.swift; sourceTree = "<group>"; };
 		6BE5164C1F20522A002EF157 /* Media.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Media.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -126,6 +130,8 @@
 		6B03E1E31EFA2E4A00A76585 /* Song */ = {
 			isa = PBXGroup;
 			children = (
+				6BC72CFE1F2742730071C01A /* Lạc Trôi.mp3 */,
+				6B8BAB131F270599007CC7A2 /* Nơi Này Có Anh.mp3 */,
 				6B03E1E41EFA2E7B00A76585 /* A Girl in Oakland.mp3 */,
 				6B03E1E51EFA2E7B00A76585 /* Find My Way Home.mp3 */,
 				6B03E1E61EFA2E7B00A76585 /* Fingers.mp3 */,
@@ -263,6 +269,8 @@
 				6B03E1EE1EFA2E7B00A76585 /* In Case You Forgot.mp3 in Resources */,
 				6B03E1EC1EFA2E7B00A76585 /* Find My Way Home.mp3 in Resources */,
 				6B03E1C91EFA09F100A76585 /* Assets.xcassets in Resources */,
+				6BC72CFF1F2742730071C01A /* Lạc Trôi.mp3 in Resources */,
+				6B8BAB141F270599007CC7A2 /* Nơi Này Có Anh.mp3 in Resources */,
 				6B03E1C71EFA09F100A76585 /* Main.storyboard in Resources */,
 				6B03E1EB1EFA2E7B00A76585 /* A Girl in Oakland.mp3 in Resources */,
 				6B03E1ED1EFA2E7B00A76585 /* Fingers.mp3 in Resources */,

@@ -18,12 +18,11 @@ class SongTableViewController: UITableViewController {
     
     
      var category = 0
-     var songs = [Song]()
      var searchSongs = [Song]()
-     var albums = [Album]()
+    
      var searchAlbums = [Album]()
      var selectedAlbum: Album?
-     var artists = [Artist]()
+    
      var searchArtists = [Artist]()
      var selectedArtist: Artist?
      var searchText: String?
@@ -31,9 +30,9 @@ class SongTableViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        getSongNames()
-        getAlbums()
-        getArtist()
+        Shared.shared.getSongNames()
+        Shared.shared.getAlbums()
+        Shared.shared.getArtist()
         
         // Uncomment the following line to preserve selection between presentations
         // self.clearsSelectionOnViewWillAppear = false
@@ -54,18 +53,18 @@ class SongTableViewController: UITableViewController {
         let result = notification.object
         self.searchText = result as! String?
         if (category == 2){
-            searchAlbums = albums.filter{
+            searchAlbums = Shared.shared.albums.filter{
                 album in return album.title.lowercased().contains((searchText?.lowercased())!)
             }
         }
         else if (category == 3){
-            searchArtists = artists.filter{
+            searchArtists = Shared.shared.artists.filter{
                     artist in return artist.name.lowercased().contains((searchText?.lowercased())!)
             }
         }
         else
         {
-        searchSongs = songs.filter{
+        searchSongs = Shared.shared.songs.filter{
             song in return song.title.lowercased().contains((searchText?.lowercased())!)
         }
         }
@@ -80,117 +79,7 @@ class SongTableViewController: UITableViewController {
         songTable.reloadData()
     }
     // Get Song Name
-    func getSongNames(){
-        let folderURL = URL(fileURLWithPath: Bundle.main.resourcePath!)
-        var songTitle, songArtist, songAlbum: String!
-        var songArtWork: Data!
-        do
-        {
-            let songPath = try FileManager.default.contentsOfDirectory(at: folderURL, includingPropertiesForKeys: nil, options: .skipsHiddenFiles)
-            for song in songPath
-            {
-                let mySong = song.absoluteString
-                if mySong.contains(".mp3")
-                {
-                    let avpltem = AVPlayerItem(url: song)
-                    let commonMetadata = avpltem.asset.commonMetadata
-                    for i in commonMetadata{
-                        if i.commonKey == "title"{
-                            songTitle = i.stringValue
-                        }
-                        if i.commonKey == "artist"{
-                            songArtist = i.stringValue
-                        }
-                        if i.commonKey == "albumName"{
-                            songAlbum = i.stringValue
-                        }
-                        if i.commonKey == "artwork"{
-                            songArtWork = i.dataValue
-                        }
-                    }
-                    if songTitle == nil{
-                        songTitle = "Unknow Song"
-                    }
-                    if songArtist == nil{
-                        songArtist = "Unknow Artist"
-                    }
-                    if songAlbum == nil {
-                        songAlbum = "Unknow Album"
-                    }
-                    songs.append(Song(title: songTitle, artist: songArtist ?? "Unknow Artist", album: songAlbum ?? "Unknow Album", artWork: songArtWork ?? UIImagePNGRepresentation(UIImage(named: "default")!)!))
-                }
-            }
-        }
-        catch{
-            print ("ERROR")
-        }
-    }
-    // Get Album
-    func getAlbums(){
-        for i in songs{
-            var checkAlbum = 0
-            for album in albums{
-                if (i.album == album.title){
-                    checkAlbum = 1
-                }
-            }
-            if (checkAlbum == 0){
-                if i.artWork != nil{
-                albums.append(Album(title: i.album, artist: i.artist, artwork: i.artWork))
-                }
-                else{
-                    let image = UIImage(named: "default")
-                    let data:Data = UIImagePNGRepresentation(image!)!
-                    albums.append(Album(title: i.album, artist: i.artist, artwork: data))
-                }
-            }
-        }
         
-        //Add Song To Album
-        for i in songs{
-            for j in 0 ..< albums.count {
-                if (i.album == albums[j].title){
-                    albums[j].appendSong(song: i)
-                }
-            }
-        }
-    }
-    // Get Artist
-    func getArtist(){
-        for i in songs{
-            var checkArtist = 0
-            for artist in artists{
-                if (i.artist == artist.name){
-                    checkArtist = 1
-                }
-            }
-            if (checkArtist == 0){
-                if i.artWork != nil{
-                    artists.append(Artist(name: i.artist, artwork: i.artWork))
-                }
-                else{
-                    let image = UIImage(named: "default")
-                    let data:Data = UIImagePNGRepresentation(image!)!
-                    artists.append(Artist(name: i.artist, artwork: data))
-                }
-            }
-        }
-        for i in songs{
-            for j in 0 ..< artists.count {
-                if (i.artist == artists[j].name){
-                    artists[j].appendSong(song: i)
-                }
-            }
-        }
-        for album in albums{
-            for i in 0 ..< artists.count{
-                if (album.artist == artists[i].name){
-                    artists[i].appendAlbum(album: album)
-                }
-            }
-        }
-    }
-    
     //Segue
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "albumDetail" {
@@ -219,14 +108,14 @@ class SongTableViewController: UITableViewController {
         switch category {
         case 2:
             if (searchText == nil){
-            return albums.count
+            return Shared.shared.albums.count
             }
             else{
                 return searchAlbums.count
             }
         case 3:
             if (searchText == nil){
-                return artists.count
+                return Shared.shared.artists.count
             }
             else{
                 return searchArtists.count
@@ -234,7 +123,7 @@ class SongTableViewController: UITableViewController {
 
         default:
             if (searchText == nil){
-                return songs.count
+                return Shared.shared.songs.count
             }
             else{
                 return searchSongs.count
@@ -249,24 +138,26 @@ class SongTableViewController: UITableViewController {
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SongTableCell
             if (searchText == nil)
             {
-            cell.titleLabel?.text = albums[indexPath.row].title
-            let a = albums[indexPath.row].albumSongs.count
-            cell.artistLabel?.text = String(a) + " Songs By \(albums[indexPath.row].artist)"
-            if songs[indexPath.row].artWork == nil{
-                cell.artworkImage.image=UIImage(named: "default")
+            searchChoice = 0
+            cell.titleLabel?.text = Shared.shared.albums[indexPath.row].title
+            let a = Shared.shared.albums[indexPath.row].albumSongs.count
+            if Shared.shared.albums[indexPath.row].title == "Unknow Album"{
+                cell.artistLabel?.text = String(a) + " Songs"
             }
-            else{
-                cell.artworkImage?.image = UIImage(data: songs[indexPath.row].artWork!)
-            }
+                else{
+                    cell.artistLabel?.text = String(a) + " Songs By \(Shared.shared.albums[indexPath.row].artist)"
+                }
+            cell.artworkImage?.image = UIImage(data: Shared.shared.albums[indexPath.row].artwork!)
+        
             return cell
             }
             else{
                 cell.titleLabel?.text = searchAlbums[indexPath.row].title
                 let a = searchAlbums[indexPath.row].albumSongs.count
                 cell.artistLabel?.text = String(a) + " Songs By \(searchAlbums[indexPath.row].artist)"
-                
-                cell.artworkImage?.image = UIImage(data: songs[indexPath.row].artWork!)
-            
+                cell.artworkImage?.image = UIImage(data: searchAlbums[indexPath.row].artwork!)
+                searchChoice = 1
+                searchText = nil
                 return cell
 
             }
@@ -274,34 +165,34 @@ class SongTableViewController: UITableViewController {
         case 3:
             let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SongTableCell
             if (searchText == nil){
-            cell.titleLabel?.text = artists[indexPath.row].name
-            cell.artistLabel.text = "\(artists[indexPath.row].albumName.count) Albums | \(artists[indexPath.row].allSong.count) Songs"
-            if songs[indexPath.row].artWork == nil{
-                cell.artworkImage.image=UIImage(named: "default")
-            }
-            else{
-                cell.artworkImage?.image = UIImage(data: songs[indexPath.row].artWork!)
-            }
+            searchChoice = 0
+            cell.titleLabel?.text = Shared.shared.artists[indexPath.row].name
+            cell.artistLabel.text = "\(Shared.shared.artists[indexPath.row].albumName.count) Albums | \(Shared.shared.artists[indexPath.row].allSong.count) Songs"
+            
+            cell.artworkImage?.image = UIImage(data: Shared.shared.artists[indexPath.row].artwork)
+            
             return cell
             }
             else{
                 cell.titleLabel?.text = searchArtists[indexPath.row].name
                 cell.artistLabel.text = "\(searchArtists[indexPath.row].albumName.count) Albums | \(searchArtists[indexPath.row].allSong.count) Songs"
-                if songs[indexPath.row].artWork == nil{
+                if searchArtists[indexPath.row].artwork == nil{
                     cell.artworkImage.image=UIImage(named: "default")
                 }
                 else{
-                    cell.artworkImage?.image = UIImage(data: songs[indexPath.row].artWork!)
+                    cell.artworkImage?.image = UIImage(data: searchArtists[indexPath.row].artwork)
                 }
+                searchChoice = 1
+                searchText = nil
                 return cell
             }
         default:
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! SongTableCell
         if (searchText == nil){
         searchChoice = 0
-        cell.titleLabel?.text = songs[indexPath.row].title
-        cell.artistLabel?.text = songs[indexPath.row].artist
-        cell.artworkImage?.image = UIImage(data: songs[indexPath.row].artWork!)
+        cell.titleLabel?.text = Shared.shared.songs[indexPath.row].title
+        cell.artistLabel?.text = Shared.shared.songs[indexPath.row].artist
+        cell.artworkImage?.image = UIImage(data: Shared.shared.songs[indexPath.row].artWork!)
         return cell
         }
         else
@@ -320,16 +211,25 @@ class SongTableViewController: UITableViewController {
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         switch category{
         case 2:
-            selectedAlbum = albums[indexPath.row]
+            if (searchChoice == 0){
+            selectedAlbum = Shared.shared.albums[indexPath.row]
+            }
+            else{
+                selectedAlbum = searchAlbums[indexPath.row]
+            }
             self.performSegue(withIdentifier: "albumDetail", sender: self)
         case 3:
-            print("Appear Artist Detail")
-            selectedArtist = artists[indexPath.row]
+            if (searchChoice == 0){
+            selectedArtist = Shared.shared.artists[indexPath.row]
+            }
+            else{
+                 selectedArtist = searchArtists[indexPath.row]
+            }
             self.performSegue(withIdentifier: "artistDetail", sender: self)
         default:
             if (searchChoice == 0){
             tableView.deselectRow(at: indexPath, animated: false)
-            Shared.shared.currentPlaying = songs[indexPath.row]
+            Shared.shared.currentPlaying = Shared.shared.songs[indexPath.row]
             Shared.shared.addSongToPlayList()
             NotificationCenter.default.post(name: Notification.Name(rawValue: "didSelectPlayingSong"), object: nil)
                 

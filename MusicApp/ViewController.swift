@@ -29,6 +29,8 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     @IBOutlet weak var playProgress: UISlider!
     @IBOutlet weak var currentArtwork: UIImageView!
     
+    var playController: PlayViewController!
+    
     
     lazy var tapRecognizer: UITapGestureRecognizer = {
         var recognizer = UITapGestureRecognizer(target: self, action: #selector(ViewController.dismissKeyboard))
@@ -43,7 +45,6 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     var categoryType = ["Songs","Albums","Artists"]
     var didSelected = [Bool](repeating: false, count: 3)
     var selectedType: String?
-    var songs = [Song]()
     var currentSong: Song?
     var audioLength = 0.0
     var timer:Timer!
@@ -95,8 +96,8 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
 //        let recognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap(recognizer:)))
 //        recognizer.numberOfTapsRequired = 1
        // currentArtwork.addGestureRecognizer(recognizer)
-        currentArtwork.isUserInteractionEnabled = true
-        
+        //currentArtwork.isUserInteractionEnabled = true
+        setupNowPlayingInfoCentre()
         
         //Notification Receive
         NotificationCenter.default.addObserver(self, selector: #selector(getSelectFromLeftTab(_:)), name: NSNotification.Name(rawValue: didChooseLeftTab), object: nil)
@@ -133,10 +134,12 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     func updatePlayButton(_ notification: Notification){
         if Shared.shared.audioPlayer.isPlaying == true{
-        playButton.setTitle("Pause", for: .normal)
+       // playButton.setTitle("Pause", for: .normal)
+            playButton.setImage(UIImage(named: "Pause"), for: .normal)
         }
         else{
-            playButton.setTitle("Play", for: .normal)
+         //   playButton.setTitle("Play", for: .normal)
+            playButton.setImage(UIImage(named: "Play"), for: .normal)
         }
     }
 
@@ -170,7 +173,8 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
             currentArtwork.image = UIImage(data: (Shared.shared.currentPlaying?.artWork)!)
         }
         if Shared.shared.audioPlayer.isPlaying == true{
-            playButton.setTitle("Pause", for: .normal)
+            //playButton.setTitle("Pause", for: .normal)
+            playButton.setImage(UIImage(named: "Pause"), for: .normal)
         }
     }
     
@@ -178,14 +182,6 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         do{
             let audioPath = Bundle.main.path(forResource: Shared.shared.currentPlaying?.title, ofType: "mp3")
             try Shared.shared.audioPlayer = AVAudioPlayer(contentsOf: NSURL(fileURLWithPath: audioPath!) as URL)
-            self.playingName.text = Shared.shared.currentPlaying?.title
-            self.playingArtist.text = Shared.shared.currentPlaying?.artist
-            if Shared.shared.currentPlaying?.artWork == nil{
-                currentArtwork.image = UIImage(named: "default")
-            }
-            else{
-                currentArtwork.image = UIImage(data: (Shared.shared.currentPlaying?.artWork)!)
-            }
             preparePlay()
             //Shared.shared.audioPlayer.delegate = self
             playSong()
@@ -204,14 +200,18 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         playProgress.maximumValue = CFloat(Shared.shared.audioPlayer.duration)
         playProgress.minimumValue = 0.0
         playProgress.value = 0.0
-        currentArtwork.image = UIImage(named: "default")
+        self.playingName.text = Shared.shared.currentPlaying?.title
+        self.playingArtist.text = Shared.shared.currentPlaying?.artist
+        currentArtwork.image = UIImage(data: (Shared.shared.currentPlaying?.artWork)!)
+
     }
     
     func playSong(){
-        Shared.shared.audioPlayer.play()
+        Shared.shared.playSong()
         startTimer()
         if (Shared.shared.audioPlayer.isPlaying == true) && (playButton.currentTitle == "Play"){
-            playButton.setTitle("Pause", for: .normal)
+            //playButton.setTitle("Pause", for: .normal)
+            playButton.setImage(UIImage(named: "Pause"), for: .normal)
         }
 
     }
@@ -228,37 +228,55 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         if !Shared.shared.audioPlayer.isPlaying{
             return
         }
-        let time = calculateTimeFromNSTimeInterval(Shared.shared.audioPlayer.currentTime)
+        let time = Shared.shared.calculateTimeFromNSTimeInterval(Shared.shared.audioPlayer.currentTime)
         playProgress.value = CFloat(Shared.shared.audioPlayer.currentTime)
         UserDefaults.standard.set(playProgress.value , forKey: "playerProgressSliderValue")
     }
     
-    
-    //Return Song Length
-    func calculateTimeFromNSTimeInterval(_ duration:TimeInterval) ->(minute:String, second:String){
-        // let hour_   = abs(Int(duration)/3600)
-        let minute_ = abs(Int((duration/60).truncatingRemainder(dividingBy: 60)))
-        let second_ = abs(Int(duration.truncatingRemainder(dividingBy: 60)))
-        
-        // var hour = hour_ > 9 ? "\(hour_)" : "0\(hour_)"
-        let minute = minute_ > 9 ? "\(minute_)" : "0\(minute_)"
-        let second = second_ > 9 ? "\(second_)" : "0\(second_)"
-        return (minute,second)
+    func setupNowPlayingInfoCentre() {
+        try! AVAudioSession.sharedInstance().setActive(true)
+        do {
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: .defaultToSpeaker)
+        } catch {
+        }
+        UIApplication.shared.beginReceivingRemoteControlEvents()
+        becomeFirstResponder()
+        MPRemoteCommandCenter.shared().playCommand.addTarget(handler: {event in
+            Shared.shared.playSong()
+            self.playButton.setImage(UIImage(named: "Pause"), for: .normal)
+            return .success
+        })
+        MPRemoteCommandCenter.shared().pauseCommand.addTarget(handler: {event in
+            Shared.shared.pauseSong()
+            self.playButton.setImage(UIImage(named: "Play"), for: .normal)
+            return .success
+        })
     }
+
+
     
     //Play Controll
     @IBAction func play(_ sender: Any) {
-        if Shared.shared.audioPlayer.isPlaying == true{
-            Shared.shared.audioPlayer.pause()
-            playButton.setTitle("Play", for: .normal)
+        if Shared.shared.currentPlaying == nil{
+            playButton.setImage(UIImage(named: "Play"), for: .normal)
         }
         else{
-            Shared.shared.audioPlayer.play()
-            playButton.setTitle("Pause", for: .normal)
+        if Shared.shared.audioPlayer.isPlaying == true{
+            Shared.shared.pauseSong()
+           // playButton.setTitle("Play", for: .normal)
+            playButton.setImage(UIImage(named: "Play"), for: .normal)
         }
+        else{
+            Shared.shared.playSong()
+            //playButton.setTitle("Pause", for: .normal)
+            playButton.setImage(UIImage(named: "Pause"), for: .normal)
+        }
+        }
+        
     }
     @IBAction func changePlayTime(_ sender: UISlider) {
         Shared.shared.audioPlayer.currentTime = TimeInterval(sender.value)
+        Shared.shared.updateInfoMPNowPlaying()
     }
     @IBAction func cancelToViewController(segue:UIStoryboardSegue) {
     }
