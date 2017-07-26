@@ -29,7 +29,6 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     @IBOutlet weak var playProgress: UISlider!
     @IBOutlet weak var currentArtwork: UIImageView!
     
-    var playController: PlayViewController!
     
     
     lazy var tapRecognizer: UITapGestureRecognizer = {

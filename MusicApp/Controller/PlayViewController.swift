@@ -35,16 +35,10 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        if (Shared.shared.currentPlaying == nil){
-            playingNameLabel.text = "No Song"
-            artistNameLabel.text = "No Artist"
-            durationLabel.text = "00:00"
-        }
-        else{
+        if (Shared.shared.currentPlaying != nil){
         prepare()
         Shared.shared.audioPlayer.delegate = self
         }
-
         setupNowPlayingInfoCentre()
         
         NotificationCenter.default.addObserver(self, selector: #selector(updatePlayDisplay(_:)), name: NSNotification.Name(rawValue: didChooseFromPlayList), object: nil)
@@ -56,10 +50,17 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     override func viewDidAppear(_ animated: Bool) {
+        if (Shared.shared.currentPlaying == nil){
+            playingNameLabel.text = "No Song"
+            artistNameLabel.text = "No Artist"
+            durationLabel.text = "00:00"
+        }
+        else{
         if Shared.shared.audioPlayer.isPlaying{
             //playButton.setTitle("Pause", for: .normal)
             playButton.setImage(UIImage(named: "Pause"), for: .normal)
             artworkImage.startRotating()
+        }
         }
 
     }
@@ -317,7 +318,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
 }
 
 extension UIView {
-    func startRotating(duration: Double = 10) {
+    func startRotating(duration: Double = 9) {
         let kAnimationKey = "rotation"
         
         if self.layer.animation(forKey: kAnimationKey) == nil {

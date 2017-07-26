@@ -65,7 +65,7 @@ class QueueViewController: UITableViewController {
             if Shared.shared.playList[indexPath.row].title != Shared.shared.currentPlaying?.title {
                 Shared.shared.playList.remove(at: indexPath.row)
             } else {
-                let message = UIAlertController(title: nil, message: "Cannot Delete Playing Song <3", preferredStyle: UIAlertControllerStyle.alert)
+                let message = UIAlertController(title: nil, message: "Cannot Remove Playing Song <3", preferredStyle: UIAlertControllerStyle.alert)
                 let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
                 message.addAction(cancel)
                 self.present(message, animated: true, completion: nil)
