@@ -165,6 +165,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
                 Shared.shared.playSong()
                 artworkImage.startRotating()
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
+                NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateToPlayList), object: nil)
             }
             if (Shared.shared.reapeatValue == false) && (Shared.shared.shufferValue == false){
                 playButton.setTitle("Play", for: .normal)
@@ -205,6 +206,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
             self.artworkImage.startRotating()
             //self.rotateView(targetView: self.artworkImage, duration: 4.0)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateToPlayList), object: nil)
             return .success
         })
         
@@ -218,6 +220,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
             self.artworkImage.startRotating()
             //self.rotateView(targetView: self.artworkImage, duration: 4.0)
             NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateToPlayList), object: nil)
             return .success
         })
         
@@ -290,6 +293,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         }
     }
     @IBAction func nextClick(_ sender: Any) {
+        if (Shared.shared.currentPlaying != nil){
         Shared.shared.nextSong()
         prepare()
         Shared.shared.audioPlayer.delegate = self
@@ -298,9 +302,12 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         playButton.setImage(UIImage(named: "Pause"), for: .normal)
         artworkImage.startRotating()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateToPlayList), object: nil)
+        }
     }
     
     @IBAction func prevClick(_ sender: Any) {
+        if (Shared.shared.currentPlaying != nil){
         Shared.shared.prevSong()
         prepare()
         Shared.shared.audioPlayer.delegate = self
@@ -309,6 +316,8 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         playButton.setImage(UIImage(named: "Pause"), for: .normal)
         artworkImage.startRotating()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateFromPlayScreen), object: nil)
+        NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateToPlayList), object: nil)
+        }
         
     }
     

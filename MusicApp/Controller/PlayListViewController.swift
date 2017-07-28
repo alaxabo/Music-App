@@ -10,7 +10,7 @@ import UIKit
 import AVFoundation
 import MediaPlayer
 
-
+var didupdateToPlayList = "didupdateToPlayList"
 
 class PlayListViewController: UITableViewController, AVAudioPlayerDelegate {
 
@@ -25,8 +25,15 @@ class PlayListViewController: UITableViewController, AVAudioPlayerDelegate {
 
         // Uncomment the following line to display an Edit button in the navigation bar for this view controller.
         //self.navigationItem.rightBarButtonItem = self.editButtonItem
+        NotificationCenter.default.addObserver(self, selector: #selector(updatePlayList(_:)), name: NSNotification.Name(rawValue: didupdateToPlayList), object: nil)
         
     }
+    
+     func updatePlayList(_ notification: Notification){
+        self.playListTable.reloadData()
+    }
+    
+    
     override func viewWillAppear(_ animated: Bool) {
        self.playListTable.reloadData()
     }
@@ -54,6 +61,12 @@ class PlayListViewController: UITableViewController, AVAudioPlayerDelegate {
         cell.titleLabel?.text = Shared.shared.playList[indexPath.row].title
         cell.artistLabel?.text = Shared.shared.playList[indexPath.row].artist
         cell.artworkImage?.image = UIImage(data: Shared.shared.playList[indexPath.row].artWork!)
+        if (Shared.shared.currentPlaying?.title == Shared.shared.playList[indexPath.row].title){
+            cell.backgroundColor = .gray
+        }
+        else{
+            cell.backgroundColor = .white
+        }
         return cell
     }
 
@@ -66,6 +79,7 @@ class PlayListViewController: UITableViewController, AVAudioPlayerDelegate {
         catch{
             print("ERROR")
         }
+        self.playListTable.reloadData()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: didChooseFromPlayList), object: nil)
     }
     
