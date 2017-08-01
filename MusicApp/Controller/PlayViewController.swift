@@ -49,7 +49,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         super.viewDidLayoutSubviews()
     }
     
-    override func viewDidAppear(_ animated: Bool) {
+    override func viewWillAppear(_ animated: Bool) {
         if (Shared.shared.currentPlaying == nil){
             playingNameLabel.text = "No Song"
             artistNameLabel.text = "No Artist"
@@ -62,7 +62,14 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
             artworkImage.startRotating()
         }
         }
-
+        if Shared.shared.reapeatValue == true{
+            repeatButton.isSelected = true
+            repeatButton.backgroundColor = .red
+        }
+        if Shared.shared.shufferValue == true {
+            shufferButton.isSelected = true
+            shufferButton.backgroundColor = .red
+        }
     }
 
 
@@ -87,17 +94,6 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         }
         else{
             artworkImage.image = UIImage(data: (Shared.shared.currentPlaying?.artWork)!)
-        }
-//        if Shared.shared.audioPlayer.isPlaying{
-//            //playButton.setTitle("Pause", for: .normal)
-//            playButton.setImage(UIImage(named: "Pause"), for: .normal)
-//            artworkImage.startRotating()
-//        }
-        if Shared.shared.reapeatValue == true{
-            repeatButton.isSelected = true
-        }
-        if Shared.shared.shufferValue == true {
-            shufferButton.isSelected = true
         }
     }
     
@@ -169,7 +165,9 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdateToPlayList), object: nil)
             }
             if (Shared.shared.reapeatValue == false) && (Shared.shared.shufferValue == false){
-                playButton.setTitle("Play", for: .normal)
+                //playButton.setTitle("Play", for: .normal)
+                playButton.setImage(UIImage(named: "Play"), for: .normal)
+                artworkImage.stopRotating()
                 NotificationCenter.default.post(name: NSNotification.Name(rawValue: didupdatePlayDone), object: nil)
             }
         }
