@@ -114,6 +114,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         //playButton.setTitle("Pause", for: .normal)
         playButton.setImage(UIImage(named: "Pause"), for: .normal)
         startTimer()
+        artworkImage.startRotating()
         
         if (Shared.shared.currentPlaying?.artWork == nil){
             artworkImage.image = UIImage(named: "default")
@@ -327,7 +328,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
 }
 
 extension UIView {
-    func startRotating(duration: Double = 9) {
+    func startRotating(duration: Double = 25) {
         let kAnimationKey = "rotation"
         
         if self.layer.animation(forKey: kAnimationKey) == nil {

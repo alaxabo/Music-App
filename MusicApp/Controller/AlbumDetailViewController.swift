@@ -20,8 +20,14 @@ class AlbumDetailViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        albumArtist.text = selectedAlbum?.artist
+        
         albumTitle.text = selectedAlbum?.title
+        if selectedAlbum?.title != "Unknow Album"{
+        albumArtist.text = selectedAlbum?.artist
+        }
+        else{
+            albumArtist.text = " "
+        }
         albumArtwork.image = UIImage(data: (selectedAlbum?.artwork)!)
         // Do any additional setup after loading the view.
     }
@@ -76,6 +82,9 @@ extension AlbumDetailViewController: UITableViewDelegate{
         Shared.shared.addSongToPlayList()
         NotificationCenter.default.post(name: Notification.Name(rawValue: "didSelectPlayingSong"), object: nil)
 
+        let mainStoryboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+        let vc : UIViewController = mainStoryboard.instantiateViewController(withIdentifier: "playScreenID") as UIViewController
+        self.present(vc, animated: true, completion: nil)
     }
 }
 

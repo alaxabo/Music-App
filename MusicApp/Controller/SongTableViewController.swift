@@ -233,6 +233,9 @@ class SongTableViewController: UITableViewController {
             Shared.shared.addSongToPlayList()
             NotificationCenter.default.post(name: Notification.Name(rawValue: "didSelectPlayingSong"), object: nil)
                 
+            let mainStoryboard = UIStoryboard(name: "Main", bundle: Bundle.main)
+            let vc : UIViewController = mainStoryboard.instantiateViewController(withIdentifier: "playScreenID") as UIViewController
+            self.present(vc, animated: true, completion: nil)
             }
             else{
                 

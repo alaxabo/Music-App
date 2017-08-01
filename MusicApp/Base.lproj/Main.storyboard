@@ -61,7 +61,7 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="80"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="l8n-NZ-pK2" id="mSX-62-n4l">
-                                    <rect key="frame" x="0.0" y="0.0" width="375" height="79.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="375" height="79"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Bp0-0h-K2K">
@@ -284,7 +284,7 @@
         <!--Play View Controller-->
         <scene sceneID="vxH-dr-jjf">
             <objects>
-                <viewController id="GjD-lS-zzf" customClass="PlayViewController" customModule="MusicApp" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController storyboardIdentifier="playScreenID" id="GjD-lS-zzf" customClass="PlayViewController" customModule="MusicApp" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="ymc-wg-3v3"/>
                         <viewControllerLayoutGuide type="bottom" id="bBb-jQ-lvh"/>
@@ -518,7 +518,7 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="102"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="GBk-Kp-Qbj" id="8xK-4v-HSY">
-                                    <rect key="frame" x="0.0" y="0.0" width="342" height="101.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="101"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="iY2-AQ-g9G">
@@ -596,7 +596,7 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <containerView opaque="NO" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="TRA-hE-aw8">
-                                <rect key="frame" x="0.0" y="20" width="375" height="647"/>
+                                <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                                 <connections>
                                     <segue destination="2UR-xi-QIY" kind="embed" id="W5Z-H6-5LH"/>
                                 </connections>
@@ -604,10 +604,10 @@
                         </subviews>
                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         <constraints>
-                            <constraint firstItem="TRA-hE-aw8" firstAttribute="top" secondItem="Wa4-8X-Usk" secondAttribute="bottom" id="4QI-mH-3TE"/>
-                            <constraint firstItem="TRA-hE-aw8" firstAttribute="leading" secondItem="7nu-tX-idc" secondAttribute="leading" id="czl-jv-qR2"/>
-                            <constraint firstAttribute="trailing" secondItem="TRA-hE-aw8" secondAttribute="trailing" id="fNy-5F-i6L"/>
-                            <constraint firstAttribute="bottom" secondItem="TRA-hE-aw8" secondAttribute="bottom" id="rcW-g3-Ckm"/>
+                            <constraint firstAttribute="trailing" secondItem="TRA-hE-aw8" secondAttribute="trailing" id="0Xv-dT-dUi"/>
+                            <constraint firstAttribute="bottom" secondItem="TRA-hE-aw8" secondAttribute="bottom" id="LnL-tV-fKc"/>
+                            <constraint firstItem="TRA-hE-aw8" firstAttribute="top" secondItem="7nu-tX-idc" secondAttribute="top" id="gek-CX-2dO"/>
+                            <constraint firstItem="TRA-hE-aw8" firstAttribute="leading" secondItem="7nu-tX-idc" secondAttribute="leading" id="yXw-Hb-11N"/>
                         </constraints>
                     </view>
                     <toolbarItems/>
@@ -1050,7 +1050,7 @@
                                 <rect key="frame" x="0.0" y="28" width="375" height="102"/>
                                 <autoresizingMask key="autoresizingMask"/>
                                 <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="4Zo-W0-Oqg" id="vaR-A1-uwP">
-                                    <rect key="frame" x="0.0" y="0.0" width="342" height="101.5"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="342" height="101"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <subviews>
                                         <stackView opaque="NO" contentMode="scaleToFill" spacing="20" translatesAutoresizingMaskIntoConstraints="NO" id="j5K-Gg-8ZS">
