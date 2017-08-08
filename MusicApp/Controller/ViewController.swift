@@ -321,8 +321,13 @@ extension ViewController: UICollectionViewDelegate{
 
 extension ViewController: UISearchBarDelegate{
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        if searchBar.text != nil{
         dismissKeyboard()
         NotificationCenter.default.post(name: NSNotification.Name(rawValue: didSendTheSearch), object: (searchBar.text))
+        }
+        else{
+            NotificationCenter.default.post(name: NSNotification.Name(rawValue: didSendTheSearchNull), object: (searchBar.text))
+        }
     }
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
         view.addGestureRecognizer(tapRecognizer)

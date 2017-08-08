@@ -11,6 +11,7 @@ import AVFoundation
 
 var didChooseCategory = "didChooseCategory"
 var didSendTheSearch = "didSendTheSearch"
+var didSendTheSearchNull = "didSendTheSearchNull"
 
 class SongTableViewController: UITableViewController {
 
@@ -42,6 +43,7 @@ class SongTableViewController: UITableViewController {
         
         NotificationCenter.default.addObserver(self, selector: #selector(getCategory(_:)), name: NSNotification.Name(rawValue: didChooseCategory), object: nil)
         NotificationCenter.default.addObserver(self, selector: #selector(getSearchText(_:)), name: NSNotification.Name(rawValue: didSendTheSearch), object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(getSearchTextNull(_:)), name: NSNotification.Name(rawValue: didSendTheSearchNull), object: nil)
     }
 
     override func didReceiveMemoryWarning() {
@@ -68,6 +70,11 @@ class SongTableViewController: UITableViewController {
             song in return song.title.lowercased().contains((searchText?.lowercased())!)
         }
         }
+        songTable.reloadData()
+    }
+    
+    func getSearchTextNull(_ notification: Notification){
+        searchText = " "
         songTable.reloadData()
     }
     
