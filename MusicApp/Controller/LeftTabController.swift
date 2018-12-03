@@ -44,7 +44,7 @@ class LeftTabController: UITableViewController {
         let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! LeftTabCell
         if indexPath.row == 0{
             cell.label.text = "By Alaxabo"
-            cell.label.font = cell.label.font.withSize(25)
+            cell.label.font = cell.label.font.withSize(20)
             cell.isUserInteractionEnabled = false
         }
         else{

@@ -150,16 +150,16 @@ class Shared {
                     let avpltem = AVPlayerItem(url: song)
                     let commonMetadata = avpltem.asset.commonMetadata
                     for i in commonMetadata{
-                        if i.commonKey == "title"{
+                        if convertFromOptionalAVMetadataKey(i.commonKey) == "title"{
                             songTitle = i.stringValue
                         }
-                        if i.commonKey == "artist"{
+                        if convertFromOptionalAVMetadataKey(i.commonKey) == "artist"{
                             songArtist = i.stringValue
                         }
-                        if i.commonKey == "albumName"{
+                        if convertFromOptionalAVMetadataKey(i.commonKey) == "albumName"{
                             songAlbum = i.stringValue
                         }
-                        if i.commonKey == "artwork"{
+                        if convertFromOptionalAVMetadataKey(i.commonKey) == "artwork"{
                             songArtWork = i.dataValue
                         }
                     }
@@ -169,7 +169,7 @@ class Shared {
                     if songAlbum == nil || songAlbum == " " {
                         songAlbum = "Unknow Album"
                     }
-                    songs.append(Song(title: songTitle, artist: songArtist ?? "Unknow Artist", album: songAlbum, artWork: songArtWork ?? UIImagePNGRepresentation(UIImage(named: "default")!)!))
+                    songs.append(Song(title: songTitle, artist: songArtist ?? "Unknow Artist", album: songAlbum, artWork: songArtWork ?? UIImage(named: "default")!.pngData()!))
                 }
                 
             }
@@ -193,7 +193,7 @@ class Shared {
                 }
                 else{
                     let image = UIImage(named: "default")
-                    let data:Data = UIImagePNGRepresentation(image!)!
+                    let data:Data = image!.pngData()!
                     albums.append(Album(title: i.album, artist: i.artist, artwork: data))
                 }
             }
@@ -223,7 +223,7 @@ class Shared {
                 }
                 else{
                     let image = UIImage(named: "default")
-                    let data:Data = UIImagePNGRepresentation(image!)!
+                    let data:Data = image!.pngData()!
                     artists.append(Artist(name: i.artist, artwork: data))
                 }
             }
@@ -247,3 +247,9 @@ class Shared {
     
 }
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromOptionalAVMetadataKey(_ input: AVMetadataKey?) -> String? {
+	guard let input = input else { return nil }
+	return input.rawValue
+}

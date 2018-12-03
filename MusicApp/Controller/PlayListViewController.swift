@@ -29,7 +29,7 @@ class PlayListViewController: UITableViewController, AVAudioPlayerDelegate {
         
     }
     
-     func updatePlayList(_ notification: Notification){
+     @objc func updatePlayList(_ notification: Notification){
         self.playListTable.reloadData()
     }
     

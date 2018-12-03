@@ -36,7 +36,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         return recognizer
     }()
     
-    func dismissKeyboard() {
+    @objc func dismissKeyboard() {
         searchBar.resignFirstResponder()
     }
     
@@ -88,7 +88,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         for i in 0...2 {
             if didSelected[i] == true{
                 let indexPath = IndexPath(row: i, section: 0)
-                collectionView.scrollToItem(at: indexPath, at: UICollectionViewScrollPosition.centeredVertically, animated: true)
+                collectionView.scrollToItem(at: indexPath, at: UICollectionView.ScrollPosition.centeredVertically, animated: true)
             }
         }
         //Move To Play Screen When Tap Artwork
@@ -131,7 +131,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     
     // MARK:- AVAudioPlayer Delegate's Callback method
     
-    func updatePlayButton(_ notification: Notification){
+    @objc func updatePlayButton(_ notification: Notification){
         if Shared.shared.audioPlayer.isPlaying == true{
        // playButton.setTitle("Pause", for: .normal)
             playButton.setImage(UIImage(named: "Pause"), for: .normal)
@@ -143,7 +143,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     }
 
     
-    func getSelectFromLeftTab(_ notification: Notification){
+    @objc func getSelectFromLeftTab(_ notification: Notification){
         let result = notification.object as? String
         self.selectedType = result
         for i in 0...2 {
@@ -155,7 +155,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         collectionView.reloadData()
     }
     
-    func updateMainScreen(_ notification: Notification){
+    @objc func updateMainScreen(_ notification: Notification){
         audioLength = Shared.shared.audioPlayer.duration
         playProgress.maximumValue = CFloat(Shared.shared.audioPlayer.duration)
         playProgress.minimumValue = 0.0
@@ -177,7 +177,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
         }
     }
     
-    func playSelectedSong(_ notification: Notification){
+    @objc func playSelectedSong(_ notification: Notification){
         do{
             let audioPath = Bundle.main.path(forResource: Shared.shared.currentPlaying?.title, ofType: "mp3")
             try Shared.shared.audioPlayer = AVAudioPlayer(contentsOf: NSURL(fileURLWithPath: audioPath!) as URL)
@@ -223,11 +223,11 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     }
     
     
-    func update(_ timer: Timer){
+    @objc func update(_ timer: Timer){
         if !Shared.shared.audioPlayer.isPlaying{
             return
         }
-        let time = Shared.shared.calculateTimeFromNSTimeInterval(Shared.shared.audioPlayer.currentTime)
+        _ = Shared.shared.calculateTimeFromNSTimeInterval(Shared.shared.audioPlayer.currentTime)
         playProgress.value = CFloat(Shared.shared.audioPlayer.currentTime)
         UserDefaults.standard.set(playProgress.value , forKey: "playerProgressSliderValue")
     }
@@ -235,7 +235,7 @@ class ViewController: UIViewController, AVAudioPlayerDelegate {
     func setupNowPlayingInfoCentre() {
         try! AVAudioSession.sharedInstance().setActive(true)
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: .defaultToSpeaker)
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playback)), mode: .default)
         } catch {
         }
         UIApplication.shared.beginReceivingRemoteControlEvents()
@@ -340,3 +340,8 @@ extension ViewController: UISearchBarDelegate{
 }
 
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
+	return input.rawValue
+}

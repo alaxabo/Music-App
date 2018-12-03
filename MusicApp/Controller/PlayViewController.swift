@@ -97,7 +97,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         }
     }
     
-    func updatePlayDisplay(_ notification: Notification){
+    @objc func updatePlayDisplay(_ notification: Notification){
         audioLength = Shared.shared.audioPlayer.duration
         playProgress.maximumValue = CFloat(Shared.shared.audioPlayer.duration)
         playProgress.minimumValue = 0.0
@@ -131,7 +131,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
         }
     }
     
-    func update(_ timer: Timer){
+    @objc func update(_ timer: Timer){
         if !Shared.shared.audioPlayer.isPlaying{
             return
         }
@@ -179,7 +179,7 @@ class PlayViewController: UIViewController, AVAudioPlayerDelegate {
     func setupNowPlayingInfoCentre() {
         try! AVAudioSession.sharedInstance().setActive(true)
         do {
-            try AVAudioSession.sharedInstance().setCategory(AVAudioSessionCategoryPlayback, with: .defaultToSpeaker)
+            try AVAudioSession.sharedInstance().setCategory(AVAudioSession.Category(rawValue: convertFromAVAudioSessionCategory(AVAudioSession.Category.playback)), mode: .default)
         } catch {
         }
         UIApplication.shared.beginReceivingRemoteControlEvents()
@@ -360,3 +360,8 @@ extension UIView {
     }
     */
 
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromAVAudioSessionCategory(_ input: AVAudioSession.Category) -> String {
+	return input.rawValue
+}

@@ -60,12 +60,12 @@ class QueueViewController: UITableViewController {
         playListTable.reloadData()
     }
     
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             if Shared.shared.playList[indexPath.row].title != Shared.shared.currentPlaying?.title {
                 Shared.shared.playList.remove(at: indexPath.row)
             } else {
-                let message = UIAlertController(title: nil, message: "Cannot Remove Playing Song <3", preferredStyle: UIAlertControllerStyle.alert)
+                let message = UIAlertController(title: nil, message: "Cannot Remove Playing Song <3", preferredStyle: UIAlertController.Style.alert)
                 let cancel = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
                 message.addAction(cancel)
                 self.present(message, animated: true, completion: nil)

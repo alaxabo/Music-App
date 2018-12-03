@@ -51,7 +51,7 @@ class SongTableViewController: UITableViewController {
         // Dispose of any resources that can be recreated.
     }
     //Get Search
-    func getSearchText(_ notification: Notification){
+    @objc func getSearchText(_ notification: Notification){
         let result = notification.object
         self.searchText = result as! String?
         if (category == 2){
@@ -73,14 +73,14 @@ class SongTableViewController: UITableViewController {
         songTable.reloadData()
     }
     
-    func getSearchTextNull(_ notification: Notification){
+    @objc func getSearchTextNull(_ notification: Notification){
         searchText = " "
         songTable.reloadData()
     }
     
     //
     
-    func getCategory(_ notification: Notification){
+    @objc func getCategory(_ notification: Notification){
         let result = notification.object
         self.category = result as! Int
         songTable.reloadData()
