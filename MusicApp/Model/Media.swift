@@ -41,9 +41,9 @@ class Shared {
     }
     func updateInfoMPNowPlaying() {
         MPNowPlayingInfoCenter.default().nowPlayingInfo = [
-            MPMediaItemPropertyTitle: currentPlaying?.title,
-            MPMediaItemPropertyArtist: currentPlaying?.artist,
-            MPMediaItemPropertyAlbumTitle: currentPlaying?.album,
+            MPMediaItemPropertyTitle: currentPlaying?.title as Any,
+            MPMediaItemPropertyArtist: currentPlaying?.artist as Any,
+            MPMediaItemPropertyAlbumTitle: currentPlaying?.album as Any,
             MPMediaItemPropertyPlaybackDuration: Shared.shared.audioPlayer.duration,
             MPNowPlayingInfoPropertyElapsedPlaybackTime: Shared.shared.audioPlayer.currentTime,
             MPMediaItemPropertyArtwork: MPMediaItemArtwork(image: UIImage(data: (currentPlaying?.artWork)!)!),
@@ -125,13 +125,11 @@ class Shared {
     
     func showTotalSongLength(){
         calculateSongLength()
-        //totalLengthOfAudioLabel.text = totalLengthOfAudio
     }
     
     
     func calculateSongLength(){
-        let time = calculateTimeFromNSTimeInterval(audioLength)
-        //        totalLengthOfAudio = "\(time.minute):\(time.second)"
+        _ = calculateTimeFromNSTimeInterval(audioLength)
     }
 
     func getSongNames(){

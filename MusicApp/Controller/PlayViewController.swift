@@ -334,7 +334,7 @@ extension UIView {
             animate.duration = duration
             animate.repeatCount = Float.infinity
             animate.fromValue = 0.0
-            animate.toValue = Float(M_PI * 2)
+            animate.toValue = Float(Double.pi * 2)
             self.layer.add(animate, forKey: kAnimationKey)
         }
     }

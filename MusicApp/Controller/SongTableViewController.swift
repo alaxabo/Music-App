@@ -183,12 +183,8 @@ class SongTableViewController: UITableViewController {
             else{
                 cell.titleLabel?.text = searchArtists[indexPath.row].name
                 cell.artistLabel.text = "\(searchArtists[indexPath.row].albumName.count) Albums | \(searchArtists[indexPath.row].allSong.count) Songs"
-                if searchArtists[indexPath.row].artwork == nil{
-                    cell.artworkImage.image=UIImage(named: "default")
-                }
-                else{
-                    cell.artworkImage?.image = UIImage(data: searchArtists[indexPath.row].artwork)
-                }
+                
+                cell.artworkImage.image = (searchArtists[indexPath.row].artwork.isEmpty) ? UIImage(named: "default") : UIImage(data: searchArtists[indexPath.row].artwork)
                 searchChoice = 1
                 searchText = nil
                 return cell

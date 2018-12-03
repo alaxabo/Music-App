@@ -185,10 +185,10 @@
                                         <nil key="highlightedColor"/>
                                     </label>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="0v6-Uh-MjI">
-                                        <rect key="frame" x="117" y="25" width="60" height="59"/>
+                                        <rect key="frame" x="117" y="25" width="59" height="59"/>
                                         <constraints>
                                             <constraint firstAttribute="height" constant="59" id="Quf-3S-qQQ"/>
-                                            <constraint firstAttribute="width" constant="60" id="Ypa-Hh-TCf"/>
+                                            <constraint firstAttribute="width" constant="59" id="Ypa-Hh-TCf"/>
                                         </constraints>
                                         <state key="normal" title="Play" image="Play"/>
                                         <connections>
@@ -196,7 +196,7 @@
                                         </connections>
                                     </button>
                                     <slider opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" value="0.5" minValue="0.0" maxValue="1" translatesAutoresizingMaskIntoConstraints="NO" id="ltx-D3-2je">
-                                        <rect key="frame" x="183" y="54" width="186" height="31"/>
+                                        <rect key="frame" x="182" y="54" width="187" height="31"/>
                                         <connections>
                                             <action selector="changePlayTime:" destination="BYZ-38-t0r" eventType="valueChanged" id="C4B-wu-TBP"/>
                                         </connections>
@@ -514,7 +514,7 @@
                                             </constraints>
                                             <userDefinedRuntimeAttributes>
                                                 <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
-                                                    <real key="value" value="41.5"/>
+                                                    <integer key="value" value="35"/>
                                                 </userDefinedRuntimeAttribute>
                                             </userDefinedRuntimeAttributes>
                                         </imageView>
@@ -784,6 +784,11 @@
                                                         <constraint firstAttribute="width" constant="70" id="Tz6-3W-BPe"/>
                                                         <constraint firstAttribute="height" constant="70" id="koH-LZ-nPo"/>
                                                     </constraints>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                            <integer key="value" value="35"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
                                                 </imageView>
                                             </subviews>
                                             <constraints>
@@ -919,6 +924,11 @@
                                                         <constraint firstAttribute="height" constant="70" id="65B-dE-M75"/>
                                                         <constraint firstAttribute="width" constant="70" id="YS4-qF-sj0"/>
                                                     </constraints>
+                                                    <userDefinedRuntimeAttributes>
+                                                        <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                            <integer key="value" value="35"/>
+                                                        </userDefinedRuntimeAttribute>
+                                                    </userDefinedRuntimeAttributes>
                                                 </imageView>
                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zH9-oK-ecd">
                                                     <rect key="frame" x="94" y="50" width="50" height="25.5"/>
@@ -1023,6 +1033,11 @@
                                                 <constraint firstAttribute="width" constant="70" id="V98-IV-IDa"/>
                                                 <constraint firstAttribute="height" constant="70" id="kvf-re-XEQ"/>
                                             </constraints>
+                                            <userDefinedRuntimeAttributes>
+                                                <userDefinedRuntimeAttribute type="number" keyPath="layer.cornerRadius">
+                                                    <integer key="value" value="35"/>
+                                                </userDefinedRuntimeAttribute>
+                                            </userDefinedRuntimeAttributes>
                                         </imageView>
                                         <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Y5G-nh-O0l">
                                             <rect key="frame" x="93" y="11" width="68.5" height="35"/>
